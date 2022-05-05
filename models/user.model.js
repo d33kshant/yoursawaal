@@ -11,6 +11,14 @@ const userSchema = new mongoose.Schema({
 	interests: String,
 	experience: [String],
 	education: [String],
+	avatar: {
+		type: String,
+		default: 'avatar.png'
+	},
+	banner: {
+		type: String,
+		default: 'banner.png'
+	},
 	email: {
 		type: String,
 		unique: true

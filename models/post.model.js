@@ -3,6 +3,7 @@ const postSchema = new mongoose.Schema({
 	author: String,
 	body: String,
 	ref: String,
+	group: String,
 	is_sponsored: Boolean,
 	external_link: String,
 	likes: [String],
