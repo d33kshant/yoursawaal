@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express')
+const cookieparser = require('cookie-parser')
 const mongoose = require('mongoose')
 
 // Routes
@@ -12,17 +13,18 @@ const DB_URI = process.env.DB_URI
 
 const app = express()
 app.use(express.json())
+app.use(cookieparser())
 
 app.use('/api/user', userRoute)
 app.use('/api/group', groupRoute)
 app.use('/api/post', postRoute)
 
-mongoose.connect(DB_URI, error=>{
+mongoose.connect(DB_URI, error => {
 	if (error) {
 		console.log('Failed to connect to database.')
 	} else {
 		console.log('Connected to database.')
-		const server = app.listen(PORT, ()=>{
+		const server = app.listen(PORT, () => {
 			console.log('Server listening on port:', PORT)
 		})
 
@@ -35,7 +37,7 @@ mongoose.connect(DB_URI, error=>{
 				process.exit(0)
 			})
 		}
-		
-		["SIGTERM", "SIGINT"].forEach(signal=>gracefulShutdown(signal))
+
+		["SIGTERM", "SIGINT"].forEach(signal => gracefulShutdown(signal))
 	}
 })
