@@ -1,12 +1,15 @@
 const mongoose = require('mongoose')
 const postSchema = new mongoose.Schema({
-	author: mongoose.Types.ObjectId,
+	author: String,
 	body: String,
-	ref: mongoose.Types.ObjectId,
-	likes: [mongoose.Types.ObjectId],
-	attachment: String,
+	ref: String,
 	is_sponsored: Boolean,
 	external_link: String,
+	likes: [String],
+	last_update: {
+		type: Date,
+		default: Date.now,
+	},
 	created_on: {
 		type: Date,
 		default: Date.now
