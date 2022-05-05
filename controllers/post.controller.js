@@ -8,12 +8,6 @@ const createPost = async (req, res) => {
 	const likes = []
 	const user = req.user
 
-	if (!user) {
-		return res.json({
-			error: "Authantication failed"
-		})
-	}
-
 	try {
 		const post = new Post({
 			body,
@@ -98,10 +92,6 @@ const getUserPosts = async (req, res) => {
 	}
 }
 
-const getFeedPosts = (req, res) => {
-	// TODO: Get posts related to current user if exist, Required authorization if user exist
-}
-
 const updatePost = async (req, res) => {
 	const user = req.user
 	const { id: post_id } = req.params
@@ -167,11 +157,27 @@ const deletePost = async (req, res) => {
 	}
 }
 
+const getLikes = async (req, res) => {
+	const { id: post_id } = req.params
+	const user_id = req.user?.uid
+	try {
+		const post = await Post.findById(post_id)
+		res.json({
+			likes: post.likes.length,
+			likeked: post.likes.indexOf(user_id) !== -1
+		})
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
 module.exports = {
 	createPost,
 	updatePost,
 	likePost,
 	deletePost,
 	getUserPosts,
-	getFeedPosts
+	getLikes
 }
