@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { createPost, updatePost, getFeedPosts, deletePost, getUserPosts, likePost, getLikes } = require('../controllers/post.controller')
+const { createPost, updatePost, deletePost, getUserPosts, likePost, getLikes } = require('../controllers/post.controller')
 const { authenticate, authorize } = require('../controllers/user.controller')
 
 router.post('/create', authenticate, createPost)
