@@ -113,7 +113,7 @@ const getUserPosts = async (req, res) => {
 		const posts = await Post.find({ author: user_id }).skip(offset).limit(POST_PER_PAGE)
 		res.json({
 			total_page: Math.ceil(total / POST_PER_PAGE),
-			posts
+			posts: posts.map(post=>({ ...post._doc, likes: post.likes.length }))
 		})
 	} catch (error) {
 		// Something went wrong with server, Use `error` as payload if required
