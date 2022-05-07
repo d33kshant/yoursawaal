@@ -122,8 +122,63 @@ const updateGroup = async (req, res) => {
 			}
 		}
 	} catch(error) {
-
 		// Something went wrong with server, Use `error` as payload if required
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+// Join the group, Required authentication
+const joinGroup = async (req, res) => {
+	const { name: group_name } = req.params
+	const uid = req.user.uid
+
+	try {
+		const group = await Group.findOne({ group_name })
+		if (group) {
+			if (group.admin === uid) {
+				res.json({
+					error: "Admin can not leave the group."
+				})
+			} else if (group.moderators.indexOf(uid) !== -1) {
+				group.moderators = group.moderators.filter(mod=>mod!==uid)
+			} else if (group.members.indexOf(uid) !== -1) {
+				group.members = group.members.filter(user=>user!==uid)
+			} else {
+				group.members.push(uid)
+			}
+		} else {
+			res.json({
+				error: "Group not found."
+			})
+		}
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+// Get random 5 groups
+const getGroups = async (req, res) => {
+
+	const uid = req.user?.uid
+	const POST_PER_PAGE = 5
+
+	try {
+		const groups = await Group.find().limit(POST_PER_PAGE)
+		res.json(groups.map(group=>({ 
+			...group._doc,
+			members: group.members.length,
+			moderators: group.moderators.length,
+			joined: uid ? (
+				group.moderators.indexOf(uid) !== -1 || 
+				group.members.indexOf(uid) !== -1 ||
+				group.admin === uid) 
+			: false
+		})))
+	} catch(error) {
 		res.json({
 			error: "Something went wrong."
 		})
@@ -135,4 +190,6 @@ module.exports = {
 	createGroup,
 	getGroupInfo,
 	updateGroup,
+	joinGroup,
+	getGroups
 }
