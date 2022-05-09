@@ -6,6 +6,9 @@ const postSchema = new mongoose.Schema({
 	group: String,			// Group in which posted
 	is_sponsored: Boolean,	// Post is sponsored or not, For admin use
 	external_link: String,	// External link
+	type: String,			// Type of the post poll, que, ans or normal
+	options: [String],		// List of options, When post type is `poll`
+	submissions: Map,
 	likes: [String],		// List of user that liked this post
 	last_update: {			// Date post last updated
 		type: Date,
