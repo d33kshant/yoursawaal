@@ -7,6 +7,8 @@ const createPost = async (req, res) => {
 	// Get required fields from request
 	const user = req.user
 	const body = req.body.body
+	const options = req.body.options || []
+	const type = req.body.type || 'normal'
 	const ref = req.body.ref || null
 	const external_link = req.body.external_link
 	
@@ -22,6 +24,13 @@ const createPost = async (req, res) => {
 		})
 	}
 
+	// Check if type is poll and has atleast two option to chose
+	if (type === 'poll' && options.length <= 1) {
+		return res.json({
+			error: "Poll should have atleast 2 or more options."
+		})
+	}
+
 	try {
 		// Create a new post from given data and save it in the databaes, Return new post as response
 		const post = new Post({
@@ -30,8 +39,14 @@ const createPost = async (req, res) => {
 			external_link,
 			is_sponsored,
 			likes,
-			author: user.uid
+			author: user.uid,
+			type,
+			options,
 		})
+		if (type === 'poll') {
+			post.submissions = new Map()
+			const map = new Map()
+		}
 		await post.save()
 		res.json({
 			message: "Post created successfully",
@@ -131,11 +146,19 @@ const updatePost = async (req, res) => {
 	const {
 		body,
 		external_link,
+		type,
 	} = req.body
+	const options = req.body.options || []
 
 	if (!post_id) {
 		return res.json({
 			error: "Post id missing in params"
+		})
+	}
+
+	if (type === 'poll' && options.length <= 1) {
+		return res.json({
+			error: "Poll should have atleast 2 or more options."
 		})
 	}
 
@@ -149,9 +172,14 @@ const updatePost = async (req, res) => {
 			const update = {
 				body,
 				external_link,
+				type,
 				last_update: Date.now()
 			}
 			await Post.updateOne(filter, update)
+			if (type === 'poll') {
+				post.submissions = new Map()
+				await post.save()
+			}
 			res.json({
 				message: "Post has been updated.",
 			})
@@ -214,11 +242,60 @@ const getLikes = async (req, res) => {
 	}
 }
 
+// Vote an poll by id, Required authentication, Post must be of type poll
+const votePoll = async (req, res) => {
+	// Get required fields from request
+	const { id: post_id, option } = req.params
+	const uid = req.user.uid
+
+	// Find the post
+	const post = await Post.findById(post_id)
+	// Check if post is of type poll
+	if (post.type === 'poll') {
+		// Check if option is valid option or not
+		if (post.options.indexOf(option) !== -1) {
+			// Check if user already submitted a response
+			if (post.submissions.has(uid)) {
+				// If reponse exist and selected option is current option delete the reponse
+				if (post.submissions.get(uid) === option) {
+					post.submissions.delete(uid)
+					await post.save()
+					res.json({
+						message: "Resonse has been removed"
+					})
+				} else {
+					// If reponse doese not exist update the option
+					post.submissions.set(uid, option)
+					await post.save()
+					res.json({
+						message: "Response has been updated."
+					})
+				}
+			} else {
+				post.submissions.set(uid, option)
+				await post.save()
+				res.json({
+					message: "Response has been submitted"
+				})
+			}
+		} else {
+			res.json({
+				error: "Invalid poll option"
+			})
+		}
+	} else {
+		res.json({
+			error: "Post is not a poll."
+		})
+	}
+}
+
 module.exports = {
 	createPost,
 	updatePost,
 	likePost,
 	deletePost,
 	getUserPosts,
-	getLikes
+	getLikes,
+	votePoll,
 }
