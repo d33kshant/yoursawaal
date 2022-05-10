@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user.model')
+const passport = require('passport')
 
 // Signup user with email, password and first name
 const signupUser = async (req, res) => {
@@ -177,5 +178,5 @@ module.exports = {
 	loginUser,
 	authenticate,
 	authorize,
-	updateUser
+	updateUser,
 }
