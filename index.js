@@ -4,7 +4,8 @@ const cookieparser = require('cookie-parser')
 const session = require('express-session')
 const passport = require('passport')
 const mongoose = require('mongoose')
-const facebookStrategy = require('passport-facebook').Strategy
+const FacebookStrategy = require('passport-facebook').Strategy
+const GoogleStrategy = require('passport-google-oauth2').Strategy
 const User = require('./models/user.model')
 
 // Routes
@@ -24,16 +25,15 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
-passport.use(new facebookStrategy(
+passport.use(new FacebookStrategy(
 	{
-		clientID: process.env.CLIENT_ID,
-		clientSecret: process.env.CLIENT_SECRET,
+		clientID: process.env.FB_CLIENT_ID,
+		clientSecret: process.env.FB_CLIENT_SECRET,
 		callbackURL: '/api/user/callback/facebook',
 		profileFields: [ 'id', 'displayName', 'gender', 'email', 'picture.type(large)' ]
 	},
 	async (token, refreshToken, profile, done) => {
 		try {
-			console.log(profile)
 			const email = profile.emails[0].value
 			const user = await User.findOne({ email })
 			if (user) {
@@ -55,17 +55,52 @@ passport.use(new facebookStrategy(
 	}
 ))
 
+passport.use(new GoogleStrategy(
+	{
+		clientID: process.env.GGL_CLIENT_ID,
+		clientSecret: process.env.GGL_CLIENT_SECRET,
+		callbackURL: '/api/user/callback/google',
+		passReqToCallback: true,
+		profileFields: [ 'id', 'displayName', 'gender', 'email', 'picture.type(large)' ]
+	},
+	async (request, token, refreshToken, profile, done) => {
+		const { email, picture: avatar } = profile
+		try {
+			const user = await User.findOne({ email })
+			if (user) {
+				done(null, user)
+			} else {
+				const newUser = new User({
+					email,
+					avatar
+				})
+				await newUser.save()
+				done(null, newUser)
+			}
+		} catch(error) {
+			done(error)
+		}
+	}
+))
+
 passport.serializeUser((user, done) => {
-	done()
+	done(null, user)
 })
 
 passport.deserializeUser((user, done) => {
-	done(null, user.id)
+	done(null, {...user, uid: user._id})
 })
 
 app.use('/api/user', userRoute)
 app.use('/api/group', groupRoute)
 app.use('/api/post', postRoute)
+
+app.get('/', (req, res) => {
+	console.log(req.user)
+	res.json({
+		message: "Home"
+	})
+})
 
 mongoose.connect(DB_URI, error => {
 	if (error) {
