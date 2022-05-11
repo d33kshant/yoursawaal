@@ -173,9 +173,18 @@ const authorize = (req, res, next) => {
 	next()
 }
 
+const logoutUser = (req, res) => {
+	req.logout()
+	req.session.destroy()
+	res.json({
+		message: "Logged out successfully."
+	})
+}
+
 module.exports = {
 	signupUser,
 	loginUser,
+	logoutUser,
 	authenticate,
 	authorize,
 	updateUser,
