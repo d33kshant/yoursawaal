@@ -12,6 +12,7 @@ const User = require('./models/user.model')
 const userRoute = require('./routes/user.route')
 const groupRoute = require('./routes/group.route')
 const postRoute = require('./routes/post.route')
+const adminRoute = require('./routes/admin.route')
 
 const PORT = process.env.PORT
 const DB_URI = process.env.DB_URI
@@ -94,6 +95,7 @@ passport.deserializeUser((user, done) => {
 app.use('/api/user', userRoute)
 app.use('/api/group', groupRoute)
 app.use('/api/post', postRoute)
+app.use('/api/admin', adminRoute)
 
 app.get('/', (req, res) => {
 	console.log(req.user)
