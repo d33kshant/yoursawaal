@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const User = require('../models/user.model')
 
 const loginAdmin = async (req, res) => {
@@ -13,7 +15,21 @@ const loginAdmin = async (req, res) => {
 		const user = await User.findOne({ email })
 		if (user) {
 			if (user.is_admin) {
-
+				if (await bcrypt.compare(password, user.password)) {
+					const token = jwt.sign({
+						email: user.email,
+						uid: user._id
+					}, process.env.SECRET)
+					res.cookie('token', token, { httpOnly: true });
+					res.json({
+						message: "Logged in successfully.",
+						token
+					})
+				} else {
+					res.json({
+						error: "Invalid username or password."
+					})	
+				}
 			} else {
 				res.json({
 					error: "You are not an admin"
