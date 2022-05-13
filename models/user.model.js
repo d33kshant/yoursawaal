@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
 	country: String,			// User's country
 	gander: String,				// User's gender
 	birthday: Date,				// User's Birthday
+	is_admin: Boolean,			// User is Admin or Not
 	password: String,			// User's password, Hashed
 	hobbies: String,			// User's hobbies, comma seprated
 	interests: String,			// User's interest, comma sepreted
