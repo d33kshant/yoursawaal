@@ -127,10 +127,29 @@ const isAdmin = async (req, res, next) => {
 	})
 }
 
+const updateUser = async (req, res) => {
+	const { id: user_id } = req.params
+	try {
+		const user = await User.findById(user_id)
+		if (user) {
+			// TODO: Update user from req.body
+		} else {
+			res.json({
+				error: "User not found."
+			})
+		}
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
 module.exports = {
 	isAdmin,
 	loginAdmin,
 	getUsers,
 	getPosts,
 	getGroups,
+	updateUser,
 }
