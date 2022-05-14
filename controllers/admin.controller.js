@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 
 const User = require('../models/user.model')
 const Post = require('../models/post.model')
+const Group = require('../models/group.model')
 
 const loginAdmin = async (req, res) => {
 	const { email, password } = req.body
@@ -39,7 +40,7 @@ const loginAdmin = async (req, res) => {
 			}
 		} else {
 			res.json({
-				error: "User not found."
+				error: "Invalid username or password."
 			})
 		}
 	} catch (error) {
@@ -90,6 +91,24 @@ const getPosts = async (req, res) => {
 	}
 }
 
+const getGroups = async (req, res) => {
+	const page = Number(req.query.page) || 1
+	const GROUP_PER_PAGE = 10
+	const offset = ((Math.max(page, 1) - 1) * GROUP_PER_PAGE)
+	try {
+		const totalGroups = await Group.find({}).count()
+		const groups = await Group.find({}).skip(offset).limit(GROUP_PER_PAGE)
+		res.json({
+			totalGroups: Math.ceil(totalGroups/GROUP_PER_PAGE),
+			groups
+		})
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
 const isAdmin = async (req, res, next) => {
 	const uid = req.user.uid
 	User.findById(uid, (error, doc) => {
@@ -113,4 +132,5 @@ module.exports = {
 	loginAdmin,
 	getUsers,
 	getPosts,
+	getGroups,
 }
