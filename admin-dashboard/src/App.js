@@ -22,7 +22,7 @@ function App() {
 
 	if (!user) {
 		return (
-			<AuthProvider>
+			<AuthProvider value={{ user, login, logout }} >
 				<Router>
 					<Routes>
 						<Route path='/' element={<LoginPage />} />
