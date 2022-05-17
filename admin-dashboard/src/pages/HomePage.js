@@ -1,7 +1,11 @@
+import { Link } from 'react-router-dom'
+
 function HomaPage() {
 	return (
-		<div>
-			Home Page
+		<div className='home-page-container'>
+			<Link to="/users">Users</Link>
+			<Link to="/posts">Posts</Link>
+			<Link to="/groups">Groups</Link>
 		</div>
 	)
 }
