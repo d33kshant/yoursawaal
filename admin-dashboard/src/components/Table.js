@@ -1,6 +1,10 @@
-function Table() {
+import "../styles/Table.css"
+
+function Table({ children }) {
 	return (
-		<div>Table</div>
+		<table className="table-container">
+			<tbody>{children}</tbody>
+		</table>
 	)
 }
 

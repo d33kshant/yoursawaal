@@ -1,6 +1,6 @@
-function TableRow({ head }) {
+function TableRow({ children, head }) {
 	return (
-		<div>TableRow: {head}</div>
+		<tr>{children}</tr>
 	)
 }
 
