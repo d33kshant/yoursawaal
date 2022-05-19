@@ -63,6 +63,8 @@ const getUsers = async (req, res) => {
 		}
 		res.json({
 			total_page: Math.ceil(totalUsers/USER_PER_PAGE),
+			total_items: totalUsers,
+			current: `${offset+1}-${offset+users.length}`,
 			users
 		})
 	} catch(error) {
@@ -82,6 +84,8 @@ const getPosts = async (req, res) => {
 		const posts = await Post.find({}).skip(offset).limit(POST_PER_PAGE)
 		res.json({
 			total_page: Math.ceil(totalPosts/POST_PER_PAGE),
+			total_items: totalPosts,
+			current: `${offset+1}-${offset+posts.length}`,
 			posts
 		})
 	} catch(error) {
@@ -99,7 +103,9 @@ const getGroups = async (req, res) => {
 		const totalGroups = await Group.find({}).count()
 		const groups = await Group.find({}).skip(offset).limit(GROUP_PER_PAGE)
 		res.json({
-			totalGroups: Math.ceil(totalGroups/GROUP_PER_PAGE),
+			total_page: Math.ceil(totalGroups/GROUP_PER_PAGE),
+			total_items: totalGroups,
+			current: `${offset+1}-${offset+groups.length}`,
 			groups
 		})
 	} catch(error) {
@@ -127,6 +133,49 @@ const isAdmin = async (req, res, next) => {
 	})
 }
 
+const getUserById = async (req, res) => {
+	const { id: user_id } = req.params
+	try {
+		const user = await User.findById(user_id)
+		if (user) {
+			delete user._doc.password
+			res.json(user)
+		} else {
+			res.json({
+				error: "User not found."
+			})
+		}
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+const getPostById = async (req, res) => {
+	const { id: post_id } = req.params
+	try {
+		const post = await Post.findById(post_id)
+		post ? res.json(post) : res.json({ error: "Post not found." })
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+const getGroupById = async (req, res) => {
+	const { id: groups_id } = req.params
+	try {
+		const group = await Group.findById(groups_id)
+		group ? res.json(group) : res.json({ error: "Group not found." })
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
 const updateUser = async (req, res) => {
 	const { id: user_id } = req.params
 	try {
@@ -151,5 +200,8 @@ module.exports = {
 	getUsers,
 	getPosts,
 	getGroups,
+	getUserById,
+	getGroupById,
+	getPostById,
 	updateUser,
 }
