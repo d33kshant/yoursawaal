@@ -4,4 +4,24 @@
 	box-sizing: border-box;
 	background: brown;
 	color: white;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.nav-link-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+}
+
+.nav-link-container a {
+	color: white;
+	opacity: .8;
+	text-decoration: none;
+}
+
+.nav-link-container a:hover {
+	opacity: 1;
 }
