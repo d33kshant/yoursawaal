@@ -6,10 +6,13 @@ import {
 	Navigate
 } from 'react-router-dom'
 import AuthProvider from './contexts/AuthContext'
+import GroupPage from './pages/GroupPage'
 import GroupsPage from './pages/GroupsPage'
 import HomaPage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import PostPage from './pages/PostPage'
 import PostsPage from './pages/PostsPage'
+import UserPage from './pages/UserPage'
 import UsersPage from './pages/UsersPage'
 import './styles/App.css'
 
@@ -41,6 +44,10 @@ function App() {
 					<Route path='/posts' element={ <PostsPage /> } />
 					<Route path='/groups' element={ <GroupsPage /> } />
 					<Route path='/users' element={ <UsersPage /> } />
+					
+					<Route path='/users/:id' element={ <UserPage /> } />
+					<Route path='/posts/:id' element={ <PostPage /> } />
+					<Route path='/groups/:id' element={ <GroupPage /> } />
 				</Routes>
 			</Router>
 		</AuthProvider>
