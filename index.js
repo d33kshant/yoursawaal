@@ -98,7 +98,6 @@ app.use('/api/post', postRoute)
 app.use('/api/admin', adminRoute)
 
 app.get('/', (req, res) => {
-	console.log(req.user)
 	res.json({
 		message: "Home"
 	})
