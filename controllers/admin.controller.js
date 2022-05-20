@@ -178,15 +178,90 @@ const getGroupById = async (req, res) => {
 
 const updateUser = async (req, res) => {
 	const { id: user_id } = req.params
+	
+	const username = req.body.username
+	const email = req.query.email
+	const password = req.body.password
+	const is_admin = req.body.is_admin
+	const gender = req.body.gender
+	const hobbies = req.body.hobbies
+	const interest = req.body.interest
+
 	try {
 		const user = await User.findById(user_id)
 		if (user) {
-			// TODO: Update user from req.body
+			user.username = username && user.username
+			user.email = email && user.email
+			user.password = password && user.password
+			user.is_admin = is_admin && user.is_admin
+			user.gender = gender && user.gender
+			user.hobbies = hobbies && user.hobbies
+			user.interest = interest && user.interest
+			await user.save()
+			res.json({
+				message: "Post has been updated."
+			})
 		} else {
 			res.json({
 				error: "User not found."
 			})
 		}
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+const updatePost = async (req, res) => {
+	const { id: post_id } = req.params
+	const body = req.body.body
+	const ref = req.body.ref
+	const type = req.body.type
+	const is_sponsored = req.body.is_sponsored
+	const group = req.body.group
+	const external_link = req.body.external_link
+
+	try {
+		const post = await Post.findById(post_id)
+		if (post) {
+			post.body = body && post.body
+			post.ref = ref && post.ref
+			post.type = type && post.type
+			post.is_sponsored = is_sponsored && post.is_sponsored
+			post.group = group && post.group
+			post.external_link = external_link && post.external_link
+			await post.save()
+			res.json({
+				message: "Post has been updated."
+			})
+		} else {
+			res.json({
+				error: "Post not found."
+			})
+		}
+	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+const updateGroup = async (req, res) => {
+
+}
+
+const getStats = async (req, res) => {
+	try {
+		const totalPosts = await Post.find({}).count()
+		const totalGroups = await Group.find({}).count()
+		const totalUsers = await User.find({}).count()
+
+		res.json({
+			total_users: totalUsers,
+			total_posts: totalPosts,
+			total_groups: totalGroups,
+		})
 	} catch(error) {
 		res.json({
 			error: "Something went wrong."
@@ -204,4 +279,7 @@ module.exports = {
 	getGroupById,
 	getPostById,
 	updateUser,
+	updatePost,
+	updateGroup,
+	getStats,
 }
