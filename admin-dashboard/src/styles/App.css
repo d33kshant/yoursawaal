@@ -1,0 +1,26 @@
+.home-page-container {
+	display: flex;
+	flex-direction: column;
+	padding: 8px;
+	box-sizing: border-box;
+	gap: 8px;
+}
+
+.data-card {
+	display: block;
+	border: 1px solid brown;
+	color: brown;
+	padding: 8px 16px;
+	box-sizing: border-box;
+	border-radius: 4px;
+	text-decoration: none;
+}
+
+.data-card:hover {
+	background: brown;
+	color: white;
+}
+
+.data-card h3, .data-card p {
+	margin: 0;
+}
