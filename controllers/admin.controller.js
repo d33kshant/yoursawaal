@@ -180,9 +180,6 @@ const updateUser = async (req, res) => {
 	const { id: user_id } = req.params
 	
 	const username = req.body.username
-	const email = req.query.email
-	const password = req.body.password
-	const is_admin = req.body.is_admin
 	const gender = req.body.gender
 	const hobbies = req.body.hobbies
 	const interest = req.body.interest
@@ -190,16 +187,13 @@ const updateUser = async (req, res) => {
 	try {
 		const user = await User.findById(user_id)
 		if (user) {
-			user.username = username && user.username
-			user.email = email && user.email
-			user.password = password && user.password
-			user.is_admin = is_admin && user.is_admin
-			user.gender = gender && user.gender
-			user.hobbies = hobbies && user.hobbies
-			user.interest = interest && user.interest
+			user.username = username || user.username
+			user.gender = gender || user.gender
+			user.hobbies = hobbies || user.hobbies
+			user.interest = interest || user.interest
 			await user.save()
 			res.json({
-				message: "Post has been updated."
+				message: "User has been updated."
 			})
 		} else {
 			res.json({
@@ -218,19 +212,19 @@ const updatePost = async (req, res) => {
 	const body = req.body.body
 	const ref = req.body.ref
 	const type = req.body.type
-	const is_sponsored = req.body.is_sponsored
+	const is_sponsored = !!req.body.is_sponsored
 	const group = req.body.group
 	const external_link = req.body.external_link
 
 	try {
 		const post = await Post.findById(post_id)
 		if (post) {
-			post.body = body && post.body
-			post.ref = ref && post.ref
-			post.type = type && post.type
-			post.is_sponsored = is_sponsored && post.is_sponsored
-			post.group = group && post.group
-			post.external_link = external_link && post.external_link
+			post.body = body || post.body
+			post.ref = ref || post.ref
+			post.type = type || post.type
+			post.is_sponsored = is_sponsored || post.is_sponsored
+			post.group = group || post.group
+			post.external_link = external_link || post.external_link
 			await post.save()
 			res.json({
 				message: "Post has been updated."
@@ -248,7 +242,29 @@ const updatePost = async (req, res) => {
 }
 
 const updateGroup = async (req, res) => {
+	const { id: group_id } = req.params
+	const group_name = req.body.group_name
+	const groups_icon = req.body.groups_icon
 
+	try {
+		const group = await Group.findById(group_id)
+		if (group) {
+			group.group_name = group_name || group.group_name
+			group.groups_icon = groups_icon || group.groups_icon
+			await group.save()
+			res.json({
+				message: "Group has been updated."
+			})
+		} else { 
+			res.json({
+				error: "Group not found."
+			})
+		}
+	} catch (error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
 }
 
 const getStats = async (req, res) => {
