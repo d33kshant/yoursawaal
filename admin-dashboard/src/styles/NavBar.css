@@ -16,10 +16,13 @@
 	gap: 8px;
 }
 
-.nav-link-container a {
+.navbar-container a {
 	color: white;
-	opacity: .8;
 	text-decoration: none;
+}
+
+.nav-link-container a {
+	opacity: .8;
 }
 
 .nav-link-container a:hover {

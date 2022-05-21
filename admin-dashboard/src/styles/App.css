@@ -24,3 +24,33 @@
 .data-card h3, .data-card p {
 	margin: 0;
 }
+
+.action-container {
+	padding: 8px;
+	box-sizing: border-box;
+	width: 100%;
+	border-top: 1px solid silver;
+	display: flex;
+	gap: 8px;
+}
+
+.action-button {
+	background: brown;
+	color: white;
+	border: none;
+	font-family: inherit;
+	padding: 4px 8px;
+	cursor: pointer;
+}
+
+.action-button.action-delete {
+	background: maroon;
+}
+
+table input {
+	width: 100%;
+	padding: 4px 8px;
+	box-sizing: border-box;
+	margin-right: 8px;
+	font-family: inherit;
+}
