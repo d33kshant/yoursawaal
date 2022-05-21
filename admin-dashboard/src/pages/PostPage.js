@@ -10,6 +10,43 @@ function PostPage() {
 	const { id } = useParams()
 	const [post, setPost] = useState({})
 
+	const updatePost = async () => {
+		const response = await fetch('/api/admin/set/posts/'+id, {
+			method: 'post',
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+			body: JSON.stringify(post)
+		})
+		const data = await response.json()
+		if (data.error) return alert(data.error)
+		alert(data.message)
+	}
+
+	const deletePost = async () => {
+		const allow = window.confirm('You sure you wan to delete this?')
+		if (allow) {
+			const response = await fetch('/api/admin/delete/posts/'+id, {
+				method: 'post',
+				headers: {
+					'Accept': 'application/json',
+					'Content-type': 'application/json',
+				}
+			})
+			const data = await response.json()
+			if (data.error) return alert(data.error)
+			alert(data.message)
+			window.location = '/posts'
+		}
+	}
+
+	const onInputChange = (key, value) => {
+		const newPost = {...post}
+		newPost[key] = value
+		setPost(newPost)
+	}
+
 	useEffect(() => {
 		const fetchPost = async () => {
 			const response = await fetch('/api/admin/get/posts/'+id)
@@ -34,11 +71,17 @@ function PostPage() {
 						return (
 							<TableRow key={index}>
 								<TableCell>{entry[0]}</TableCell>
-								<TableCell>{entry[1]}</TableCell>
+								<TableCell>
+									<input value={entry[1].toString()} onChange={event=>onInputChange(entry[0], event.target.value)} />
+								</TableCell>
 							</TableRow>
 						)
 					}) }
 				</Table>
+				<div className="action-container">
+					<button className="action-button" onClick={updatePost}>Save</button>
+					<button className="action-button action-delete" onClick={deletePost}>Delete</button>
+				</div>
 			</div>
 		</>
 	)

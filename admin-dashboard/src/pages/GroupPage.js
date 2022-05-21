@@ -10,6 +10,33 @@ function GroupPage() {
 	const { id } = useParams()
 	const [group, setGroup] = useState({})
 
+	const updateGroup = async () => {
+		const response = await fetch('/api/admin/set/groups/'+id, {
+			method: 'post',
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+			body: JSON.stringify(group)
+		})
+		const data = await response.json()
+		if (data.error) return alert(data.error)
+		alert(data.message)
+	}
+
+	const deleteGroup = async () => {
+		const response = await fetch('/api/admin/delete/groups/'+id)
+		const data = await response.json()
+		if (data.error) return alert(data.error)
+		alert(data.message)
+	}
+
+	const onInputChange = (key, value) => {
+		const newGroup = {...group}
+		newGroup[key] = value
+		setGroup(newGroup)
+	}
+
 	useEffect(() => {
 		const fetchGroup = async () => {
 			const response = await fetch('/api/admin/get/groups/'+id)
@@ -34,11 +61,17 @@ function GroupPage() {
 						return (
 							<TableRow key={index}>
 								<TableCell>{entry[0]}</TableCell>
-								<TableCell>{entry[1]}</TableCell>
+								<TableCell>
+									<input value={entry[1].toString()} onChange={event=>onInputChange(entry[0], event.target.value)} />
+								</TableCell>
 							</TableRow>
 						)
 					}) }
 				</Table>
+				<div className="action-container">
+					<button onClick={updateGroup} className="action-button">Save</button>
+					<button onClick={deleteGroup} className="action-button action-delete">Delete</button>
+				</div>
 			</div>
 		</>
 	)

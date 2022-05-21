@@ -10,6 +10,33 @@ function UserPage() {
 	const { id } = useParams()
 	const [user, setUser] = useState({})
 
+	const updateUser = async () => {
+		const response = await fetch('/api/admin/set/users/'+id, {
+			method: 'post',
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+			body: JSON.stringify(user)
+		})
+		const data = await response.json()
+		if (data.error) return alert(data.error)
+		alert(data.message)
+	}
+
+	const deleteUser = async () => {
+		const response = await fetch('/api/admin/delete/users/'+id)
+		const data = await response.json()
+		if (data.error) return alert(data.error)
+		alert(data.message)
+	}
+
+	const inputChange = (key, value) => {
+		const newUser = { ...user }
+		newUser[key] = value
+		setUser(newUser)
+	}
+
 	useEffect(() => {
 		const fetchUser = async () => {
 			const response = await fetch('/api/admin/get/users/'+id)
@@ -34,11 +61,18 @@ function UserPage() {
 						return (
 							<TableRow key={index}>
 								<TableCell>{entry[0]}</TableCell>
-								<TableCell>{entry[1]}</TableCell>
+								<TableCell>
+									<input value={entry[1].toString()} onChange={event=>inputChange(entry[0], event.target.value)} />
+								</TableCell>
 							</TableRow>
 						)
+						else return ""
 					}) }
 				</Table>
+				<div className="action-container">
+					<button className="action-button" onClick={updateUser}>Save</button>
+					<button className="action-button action-delete" onClick={deleteUser}>Delete</button>
+				</div>
 			</div>
 		</>
 	)

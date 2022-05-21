@@ -20,6 +20,7 @@ function LoginPage() {
 		if (data.error) {
 			return alert(data.error)
 		}
+		localStorage.setItem('token', data.token)
 		login({ token: data.token })
 	}
 
