@@ -15,7 +15,7 @@ const loginAdmin = async (req, res) => {
 	}
 
 	try {
-		const user = await User.findOne({ email })
+		const user = await User.findOne({ email }, { __v: 0 })
 		if (user) {
 			if (user.is_admin) {
 				if (await bcrypt.compare(password, user.password)) {
@@ -56,7 +56,7 @@ const getUsers = async (req, res) => {
 	const offset = ((Math.max(page, 1) - 1) * USER_PER_PAGE)
 
 	try {
-		const totalUsers = await User.find({}).count()
+		const totalUsers = await User.find({}, { __v: 0 }).count()
 		const users = await User.find({}).skip(offset).limit(USER_PER_PAGE)
 		for (const user of users) {
 			delete user._doc.password
@@ -80,7 +80,7 @@ const getPosts = async (req, res) => {
 	const offset = ((Math.max(page, 1) - 1) * POST_PER_PAGE)
 
 	try {
-		const totalPosts = await Post.find({}).count()
+		const totalPosts = await Post.find({}, { __v: 0 }).count()
 		const posts = await Post.find({}).skip(offset).limit(POST_PER_PAGE)
 		res.json({
 			total_page: Math.ceil(totalPosts/POST_PER_PAGE),
@@ -100,7 +100,7 @@ const getGroups = async (req, res) => {
 	const GROUP_PER_PAGE = 10
 	const offset = ((Math.max(page, 1) - 1) * GROUP_PER_PAGE)
 	try {
-		const totalGroups = await Group.find({}).count()
+		const totalGroups = await Group.find({}, { __v: 0 }).count()
 		const groups = await Group.find({}).skip(offset).limit(GROUP_PER_PAGE)
 		res.json({
 			total_page: Math.ceil(totalGroups/GROUP_PER_PAGE),
@@ -117,7 +117,7 @@ const getGroups = async (req, res) => {
 
 const isAdmin = async (req, res, next) => {
 	const uid = req.user.uid
-	User.findById(uid, (error, doc) => {
+	User.findById(uid, { __v: 0 }, (error, doc) => {
 		if (error) {
 			return res.json({
 				error: "Semething went wrong"
@@ -136,7 +136,7 @@ const isAdmin = async (req, res, next) => {
 const getUserById = async (req, res) => {
 	const { id: user_id } = req.params
 	try {
-		const user = await User.findById(user_id)
+		const user = await User.findById(user_id, { __v: 0 })
 		if (user) {
 			delete user._doc.password
 			res.json(user)
@@ -155,7 +155,7 @@ const getUserById = async (req, res) => {
 const getPostById = async (req, res) => {
 	const { id: post_id } = req.params
 	try {
-		const post = await Post.findById(post_id)
+		const post = await Post.findById(post_id, { __v: 0 })
 		post ? res.json(post) : res.json({ error: "Post not found." })
 	} catch(error) {
 		res.json({
@@ -167,7 +167,7 @@ const getPostById = async (req, res) => {
 const getGroupById = async (req, res) => {
 	const { id: groups_id } = req.params
 	try {
-		const group = await Group.findById(groups_id)
+		const group = await Group.findById(groups_id, { __v: 0 })
 		group ? res.json(group) : res.json({ error: "Group not found." })
 	} catch(error) {
 		res.json({
@@ -185,7 +185,7 @@ const updateUser = async (req, res) => {
 	const interest = req.body.interest
 
 	try {
-		const user = await User.findById(user_id)
+		const user = await User.findById(user_id, { __v: 0 })
 		if (user) {
 			user.username = username || user.username
 			user.gender = gender || user.gender
@@ -217,7 +217,7 @@ const updatePost = async (req, res) => {
 	const external_link = req.body.external_link
 
 	try {
-		const post = await Post.findById(post_id)
+		const post = await Post.findById(post_id, { __v: 0 })
 		if (post) {
 			post.body = body || post.body
 			post.ref = ref || post.ref
@@ -247,7 +247,7 @@ const updateGroup = async (req, res) => {
 	const groups_icon = req.body.groups_icon
 
 	try {
-		const group = await Group.findById(group_id)
+		const group = await Group.findById(group_id, { __v: 0 })
 		if (group) {
 			group.group_name = group_name || group.group_name
 			group.groups_icon = groups_icon || group.groups_icon
@@ -269,9 +269,9 @@ const updateGroup = async (req, res) => {
 
 const getStats = async (req, res) => {
 	try {
-		const totalPosts = await Post.find({}).count()
-		const totalGroups = await Group.find({}).count()
-		const totalUsers = await User.find({}).count()
+		const totalPosts = await Post.find({}, { __v: 0 }).count()
+		const totalGroups = await Group.find({}, { __v: 0 }).count()
+		const totalUsers = await User.find({}, { __v: 0 }).count()
 
 		res.json({
 			total_users: totalUsers,
@@ -279,6 +279,54 @@ const getStats = async (req, res) => {
 			total_groups: totalGroups,
 		})
 	} catch(error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+const deletePost = async (req, res) => {
+	const { id: _id } = req.params
+	try {
+		await Post.deleteOne({ _id })
+		res.json({
+			message: "Post has been deleted."
+		})
+	} catch (error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+const deleteGroup = async (req, res) => {
+	const { id: _id } = req.params
+	try {
+		await Group.deleteOne({ _id })
+		res.json({
+			message: "Post has been deleted."
+		})
+	} catch (error) {
+		res.json({
+			error: "Something went wrong."
+		})
+	}
+}
+
+const deleteUser = async (req, res) => {
+	const { id: _id } = req.params
+	try {
+
+		const user = await User.findById(_id)
+		if (user.is_admin) return res.json({
+			error: "Can not delete admin."
+		})
+
+		await User.deleteOne({ _id })
+		res.json({
+			message: "Post has been deleted."
+		})
+	} catch (error) {
 		res.json({
 			error: "Something went wrong."
 		})
@@ -297,5 +345,8 @@ module.exports = {
 	updateUser,
 	updatePost,
 	updateGroup,
+	deletePost,
+	deleteGroup,
+	deleteUser,
 	getStats,
 }
