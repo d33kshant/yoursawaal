@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
 	BrowserRouter as Router,
 	Routes,
@@ -22,6 +22,11 @@ function App() {
 
 	const login = _user => setUser(_user)
 	const logout = () => setUser(null)
+
+	useEffect(() => {
+		const token = localStorage.getItem('token')
+		if (token) setUser({ token })
+	}, [])
 
 	if (!user) {
 		return (
