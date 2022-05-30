@@ -34,11 +34,12 @@
 	gap: 8px;
 }
 
-.action-button {
+.action-button, .page-control-container button {
 	background: brown;
 	color: white;
 	border: none;
 	font-family: inherit;
+	font-size: 16px;
 	padding: 4px 8px;
 	cursor: pointer;
 }
@@ -53,4 +54,10 @@ table input {
 	box-sizing: border-box;
 	margin-right: 8px;
 	font-family: inherit;
+}
+
+.page-control-container {
+	display: flex;
+	gap: 8px;
+	padding: 8px;
 }
