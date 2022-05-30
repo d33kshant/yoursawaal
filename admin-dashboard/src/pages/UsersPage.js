@@ -7,18 +7,18 @@ import NavBar from '../components/NavBar'
 import PageHeader from '../components/PageHeader'
 
 function UsersPage() {
-	
+
 	const [users, setUsers] = useState([])
 	const [page, setPage] = useState(1)
 	const [stats, setStats] = useState({})
 
 	useEffect(() => {
 		const fetchUsers = async () => {
-			const response = await fetch(`/api/admin/get/users?page=${page}`)
+			const response = await fetch(`/api/admin/users?page=${page}`)
 			const data = await response.json()
 			if (data.error) return alert(data.error)
 			setUsers(data.users)
-			setStats({ ...data, users: null})
+			setStats({ ...data, users: null })
 		}
 		fetchUsers()
 	}, [])
@@ -27,7 +27,7 @@ function UsersPage() {
 		<>
 			<NavBar />
 			<div className='page-container'>
-				<PageHeader title="Post's Data" current={stats.current} total={stats.total_items} />
+				<PageHeader title="User's Data" current={stats.current} total={stats.total_items} />
 				<Table>
 					<TableRow>
 						<TableCell head={true}>S.No.</TableCell>
@@ -36,18 +36,22 @@ function UsersPage() {
 						<TableCell head={true}>Email</TableCell>
 						<TableCell head={true}>Edit</TableCell>
 					</TableRow>
-					{users.map((user, index)=>{
+					{users.map((user, index) => {
 						return (
 							<TableRow key={user._id}>
-								<TableCell>{(page-1)*10+(index+1)}</TableCell>
-								<TableCell><Link to={'/users/'+user._id}>{user._id}</Link></TableCell>
+								<TableCell>{(page - 1) * 10 + (index + 1)}</TableCell>
+								<TableCell><Link to={'/users/' + user._id}>{user._id}</Link></TableCell>
 								<TableCell>{user.name}</TableCell>
 								<TableCell>{user.email}</TableCell>
-								<TableCell><Link to={'/users/'+user._id}>Edit</Link></TableCell>
+								<TableCell><Link to={'/users/' + user._id}>Edit</Link></TableCell>
 							</TableRow>
 						)
 					})}
 				</Table>
+				<div className='page-control-container'>
+					{page > 1 && <button onClick={() => setPage(page - 1)}>Previous</button>}
+					{page < stats.total_page && <button onClick={() => setPage(page + 1)}>Next</button>}
+				</div>
 			</div>
 		</>
 	)

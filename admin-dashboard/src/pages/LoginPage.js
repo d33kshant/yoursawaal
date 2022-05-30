@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react'
 import { AuthContext } from '../contexts/AuthContext'
+import "../styles/LoginPage.css"
 
 function LoginPage() {
 
@@ -32,9 +33,10 @@ function LoginPage() {
 
 	return (
 		<div className="login-page-container">
-			<form onSubmit={onFormSubmit}>
-				<input type="email" name='email' value={state.email} onChange={event=>onInputChange('email', event.target.value)} />
-				<input type="password" name='password' value={state.password} onChange={event=>onInputChange('password', event.target.value)} />
+			<form className='login-form-container' onSubmit={onFormSubmit}>
+				<h2>Admin Login</h2>
+				<input autoComplete={false} placeholder="Enter Admin's Email" type="email" name='email' value={state.email} onChange={event => onInputChange('email', event.target.value)} />
+				<input autoComplete={false} placeholder="Enter Admin's Password" type="password" name='password' value={state.password} onChange={event => onInputChange('password', event.target.value)} />
 				<button type='submit'>Login</button>
 			</form>
 		</div>

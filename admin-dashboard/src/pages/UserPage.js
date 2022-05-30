@@ -11,8 +11,8 @@ function UserPage() {
 	const [user, setUser] = useState({})
 
 	const updateUser = async () => {
-		const response = await fetch('/api/admin/set/users/'+id, {
-			method: 'post',
+		const response = await fetch('/api/admin/users/' + id, {
+			method: 'put',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -25,7 +25,13 @@ function UserPage() {
 	}
 
 	const deleteUser = async () => {
-		const response = await fetch('/api/admin/delete/users/'+id)
+		const response = await fetch('/api/admin/users/' + id, {
+			method: 'delete',
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+		})
 		const data = await response.json()
 		if (data.error) return alert(data.error)
 		alert(data.message)
@@ -39,7 +45,7 @@ function UserPage() {
 
 	useEffect(() => {
 		const fetchUser = async () => {
-			const response = await fetch('/api/admin/get/users/'+id)
+			const response = await fetch('/api/admin/users/' + id)
 			const data = await response.json()
 			if (data.error) return alert(data.error)
 			setUser(data)
@@ -56,18 +62,18 @@ function UserPage() {
 						<TableCell head={true}>Key</TableCell>
 						<TableCell head={true}>Value</TableCell>
 					</TableRow>
-					{ Object.entries(user).map((entry, index)=>{
+					{Object.entries(user).map((entry, index) => {
 						if (typeof entry[1] !== 'object')
-						return (
-							<TableRow key={index}>
-								<TableCell>{entry[0]}</TableCell>
-								<TableCell>
-									<input value={entry[1].toString()} onChange={event=>inputChange(entry[0], event.target.value)} />
-								</TableCell>
-							</TableRow>
-						)
+							return (
+								<TableRow key={index}>
+									<TableCell>{entry[0]}</TableCell>
+									<TableCell>
+										<input value={entry[1].toString()} onChange={event => inputChange(entry[0], event.target.value)} />
+									</TableCell>
+								</TableRow>
+							)
 						else return ""
-					}) }
+					})}
 				</Table>
 				<div className="action-container">
 					<button className="action-button" onClick={updateUser}>Save</button>

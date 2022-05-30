@@ -14,11 +14,11 @@ function PostsPage() {
 
 	useEffect(() => {
 		const fetchPosts = async () => {
-			const response = await fetch(`/api/admin/get/posts?page=${page}`)
+			const response = await fetch(`/api/admin/posts?page=${page}`)
 			const data = await response.json()
 			if (data.error) return alert(data.error)
 			setPosts(data.posts)
-			setStats({ ...data, posts: null})
+			setStats({ ...data, posts: null })
 		}
 		fetchPosts()
 	}, [])
@@ -37,10 +37,10 @@ function PostsPage() {
 						<TableCell head={true}>Created On</TableCell>
 						<TableCell head={true}>Edit</TableCell>
 					</TableRow>
-					{posts.map((post, index)=>{
+					{posts.map((post, index) => {
 						return (
 							<TableRow key={post._id}>
-								<TableCell>{(page-1)*10+(index+1)}</TableCell>
+								<TableCell>{(page - 1) * 10 + (index + 1)}</TableCell>
 								<TableCell>
 									<Link to={`/posts/${post._id}`}>{post._id}</Link>
 								</TableCell>
@@ -50,11 +50,15 @@ function PostsPage() {
 									<Link to={`/users/${post.author}`}>{post.author}</Link>
 								</TableCell>
 								<TableCell>{post.created_on}</TableCell>
-								<TableCell><Link to={'/posts/'+post._id}>Edit</Link></TableCell>
+								<TableCell><Link to={'/posts/' + post._id}>Edit</Link></TableCell>
 							</TableRow>
 						)
 					})}
 				</Table>
+				<div className='page-control-container'>
+					{page > 1 && <button onClick={() => setPage(page - 1)}>Previous</button>}
+					{page < stats.total_page && <button onClick={() => setPage(page + 1)}>Next</button>}
+				</div>
 			</div>
 		</>
 	)
